@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include "Sprite.h"
 #include "Game.h"
+
 #define FILE_NOT_FOUND L"File not found!"
 #define MAIN_SPRITE_PATH  L"Che.bmp"
 #define GUN_SPRITE_PATH L"Gun1.bmp"
@@ -15,6 +16,11 @@ TCHAR WinName[] = _T("MainFrame");
 
 Game *game;
 
+RECT rc;
+
+#include<gdiplus.h>
+#pragma comment(lib, "gdiplus.lib")
+using namespace Gdiplus;
 
 
 class Window {
@@ -34,6 +40,8 @@ public:
 		wc.cbClsExtra = 0;            
 		wc.cbWndExtra = 0;            // White color
 		wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+		HBRUSH hb = ::CreateSolidBrush(RGB(222, 10, 249));
+		wc.hbrBackground = hb;
 		if (!RegisterClass(&wc)) return 0;  
 
 	}
@@ -50,6 +58,8 @@ public:
 			NULL,         // Without menu
 			This,         // Application descriptor
 			NULL);        
+
+		GetWindowRect(hwnd, &rc);
 	}
 
 	void show_window() {
@@ -68,6 +78,11 @@ int WINAPI _tWinMain(HINSTANCE This,
 	LPTSTR,         
 	int mode)       
 {
+	// Часть кода GDI+:
+	GdiplusStartupInput gdiplusStartupInput; // Связано с загрузкой картинки
+	ULONG_PTR gdiplusToken;
+	GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL); // Включаем GDI+
+
 	Sprite* mainSprite, * gunSprite;
 
 
@@ -79,7 +94,7 @@ int WINAPI _tWinMain(HINSTANCE This,
 	}
 	GetObject(hBitmap, sizeof(BITMAP), &Bitmap);
 
-	mainSprite = new Sprite(40, 40, 30, 40, hBitmap, Bitmap);
+	mainSprite = new Sprite(40, 40, 30, 40, L"C:\\Users\\User\\Source\\Repos\\WindowsProject2\\Debug\\image.png");
 
 	hBitmap = LoadImage(NULL, GUN_SPRITE_PATH, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
 	if (!hBitmap) {
@@ -88,13 +103,14 @@ int WINAPI _tWinMain(HINSTANCE This,
 	}
 	GetObject(hBitmap, sizeof(BITMAP), &Bitmap);
 
-	gunSprite = new Sprite(100, 100, 10, 10, hBitmap, Bitmap);
+	gunSprite = new Sprite(100, 100, 10, 10, L"C:\\Users\\User\\Source\\Repos\\WindowsProject2\\Debug\\image.png");
 
 	game = new Game(mainSprite, gunSprite);
 
 
 	MSG msg;
 	Window myWin;
+
 
 	myWin.reg_window(This, L"MyWindowClass", WndProc);
 	myWin.create_window(This);
@@ -105,10 +121,9 @@ int WINAPI _tWinMain(HINSTANCE This,
 		TranslateMessage(&msg); 
 		DispatchMessage(&msg);  
 	}
+	GdiplusShutdown(gdiplusToken); // Завершение работы GDI+
 	return 0;
 }
-
-
 
 
 
@@ -167,8 +182,11 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 			break;	
 
 		case WM_PAINT:
+		{
+
 			game->draw(hwnd);
 
+		}
 			break;
 
 		case WM_TIMER:

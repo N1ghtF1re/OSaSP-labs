@@ -1,12 +1,16 @@
 #include "Sprite.h"
+#include <gdiplus.h>
 
-	Sprite::Sprite(int _x, int _y, int _rx, int _ry, HANDLE _hBitmap, BITMAP _Bitmap) {
+
+using namespace Gdiplus;
+
+
+	Sprite::Sprite(int _x, int _y, int _rx, int _ry, const WCHAR* _image) {
 			x = _x;
 			y = _y;
 			rx = _rx;
 			ry = _ry;
-			hBitmap = _hBitmap;
-			Bitmap = _Bitmap;
+			image = _image;
 	}
 
 	void Sprite::moveTo(HWND& hwnd, int _x, int _y) {
@@ -64,20 +68,24 @@
 	}
 
 	void Sprite::draw(HWND hwnd) {
-		HDC hdc, hCompatibleDC;
-		PAINTSTRUCT ps;
-		HANDLE hOldBitmap;
+		RECT rc;
+		GetWindowRect(hwnd, &rc);
 
+		PAINTSTRUCT pt;
 
-		hdc = BeginPaint(hwnd, &ps);
+		HDC hDC = BeginPaint(hwnd, &pt);
 
-		hCompatibleDC = CreateCompatibleDC(hdc);
-		hOldBitmap = SelectObject(hCompatibleDC, hBitmap);
-		StretchBlt(hdc, x - rx, y - ry, rx * 2, ry * 2, hCompatibleDC, 13, 0, Bitmap.bmWidth - 25, 
-			Bitmap.bmHeight - 5, SRCCOPY);
-		SelectObject(hCompatibleDC, hOldBitmap);
+		Graphics graphics(hDC);
+		Bitmap BackBuf(rc.right, rc.bottom, &graphics);
+		Graphics temp(&BackBuf);
 
-		ValidateRect(hwnd, NULL);
-		EndPaint(hwnd, &ps);
+		Image img = image;
+
+		temp.DrawImage(&img, x, y, rx, ry);
+
+		graphics.DrawImage(&BackBuf, 0, 0, 0, 0, rc.right, rc.bottom, UnitPixel);
+
+		EndPaint(hwnd, &pt);
+
 
 	}

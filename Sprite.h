@@ -1,7 +1,9 @@
 #pragma once
 #include <Windows.h>
+#include <gdiplus.h>
 
 
+using namespace Gdiplus;
 
 class Sprite {
 private:
@@ -12,10 +14,9 @@ private:
 
 	int rebound = rx - 5;
 	int allowedBreakBounds = 10;
-	HANDLE hBitmap;
-	BITMAP Bitmap;
+	const WCHAR* image;
 public:
-	Sprite(int _x, int _y, int _rx, int _ry, HANDLE _hBitmap, BITMAP _Bitmap);
+	Sprite(int _x, int _y, int _rx, int _ry, const WCHAR* _image);
 
 	void moveTo(HWND& hwnd, int _x, int _y);
 
