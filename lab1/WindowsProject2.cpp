@@ -6,8 +6,8 @@
 #include "Game.h"
 
 #define FILE_NOT_FOUND L"File not found!"
-#define MAIN_SPRITE_PATH  L"Che.bmp"
-#define GUN_SPRITE_PATH L"Gun1.bmp"
+#define MAIN_SPRITE_PATH  L"Che.png"
+#define GUN_SPRITE_PATH L"Gun1.png"
 #define WINDOW_TITLE L"Osisp lab1"
 #define TIMER_TIME 40
 
@@ -94,7 +94,7 @@ int WINAPI _tWinMain(HINSTANCE This,
 	}
 	GetObject(hBitmap, sizeof(BITMAP), &Bitmap);
 
-	mainSprite = new Sprite(40, 40, 30, 40, L"C:\\Users\\User\\Source\\Repos\\WindowsProject2\\Debug\\image.png");
+	mainSprite = new Sprite(40, 40, 30, 40, MAIN_SPRITE_PATH);
 
 	hBitmap = LoadImage(NULL, GUN_SPRITE_PATH, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
 	if (!hBitmap) {
@@ -103,7 +103,7 @@ int WINAPI _tWinMain(HINSTANCE This,
 	}
 	GetObject(hBitmap, sizeof(BITMAP), &Bitmap);
 
-	gunSprite = new Sprite(100, 100, 10, 10, L"C:\\Users\\User\\Source\\Repos\\WindowsProject2\\Debug\\image.png");
+	gunSprite = new Sprite(100, 100, 10, 10, GUN_SPRITE_PATH);
 
 	game = new Game(mainSprite, gunSprite);
 
